@@ -1,0 +1,302 @@
+
+<html>
+    <head>
+        <title>Admin page</title>
+        <link rel="icon" type="image/png" href="../static/images/logo.png">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+
+        <style>
+            *{
+                font-family: 'Roboto', sans-serif;
+                font-weight: 400;
+                user-select: none;
+            }
+            body{
+                background-color: rgb(229, 236, 243);
+                margin: 0;
+            }
+            .container{
+                height:100vh;
+                text-align: center;
+            }
+            .header{
+                background-color:rgb(21, 51, 8);
+                color: white;
+                height: 50px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding:10px;
+                box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+            }
+            h1{
+                font-weight: 300;
+            }
+            .body{
+                width: fit-content;
+                display: flex;
+                flex-direction: column;
+                margin: auto;
+                border: 1px solid black;
+            }
+            .section{
+                border-radius: 5px;
+                padding: 20px;
+                
+                width: 360px;
+                margin: auto;
+            }
+            .secHeading{
+                font-size: 20px;
+                font-weight: bold;
+            }
+            .tabs{
+                width: fit-content;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                vertical-align: middle;
+                flex-direction: row;
+                margin: auto;
+            }
+            .tab{
+                width: 180px;
+                background-color: rgb(54, 82, 42);
+                color: white;
+                padding: 10px;
+                cursor: pointer;
+                text-align: center;
+            }
+            .tab:hover{
+                background-color: green;
+            }
+            
+            table{
+                border-spacing: 5px;
+            }
+            th{
+                display: flex;
+            }
+            button{
+                margin-right: 5px;
+                margin-top: 5px;
+                border-radius: 5px;
+                background-color: rgb(84, 128, 66);
+                color: white;
+                padding: 5px;
+            }
+            button:hover{
+                background-color: green;
+            }
+            a{
+                text-decoration: none;
+                text-align: center;
+                font-weight: 300;
+            }
+            a:hover{
+                text-decoration: underline;
+            }
+            h1{
+                cursor: pointer;
+            }
+            #prompt{
+                color:red;
+                font-size: 15px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="header">
+                <h1 id="heading">RoadCapture<RoadCapture</h1>
+            </div>
+
+            <br><br>
+
+            <div class="body">
+                <div class="tabs">
+                    <div class="tab" id="usrTab">Users</div>
+                    <div class="tab" id="reTab">Road Entries</div>
+                </div>
+
+                <div class="section" id="usrSec">
+                    <p class="secHeading">User</p>
+                    <table>
+                        <tr>
+                            <th><span>User ID</span></th>
+                            <th><input type="text" placeholder="User ID" id="uid"></th>
+                        </tr>
+                        <tr>
+                            <th><span>Email</span></th>
+                            <th><input type="email" placeholder="Email" id="email"></th>
+                        </tr>
+
+                        <tr>
+                            <th><span>Authorization</span></th>
+                            <th>
+                                <select id="auth">
+                                    <option value="0" selected>Select authorization</option>
+                                    <option value="app_operator">App operator</option>
+                                    <option value="data_manager">Data manager</option>
+                                    <option value="field_operator">Field Operator</option>
+                                </select>
+                            </th>
+                        </tr>
+
+                        <tr>
+                            <th><span>Password</span></th>
+                            <th><input type="password" placeholder="Password" id="password"></th>
+                        </tr>
+
+                        <tr>
+                            <th colspan="2">
+                                <button id="addUser">Add user</button>
+                                <button id="delUser">Delete user</button>
+                                <button id="updUser">Update user</button>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="section" id="reSec">
+                    <p class="secHeading">Road Entries</p>
+                    <table>
+                        <!-- <tr>
+                            <th><span>Entry</span></th>
+                            <th>
+                                <input type="text" placeholder="Entry ID" id="rid">
+                            </th>
+                        </tr> -->
+                        <tr>
+                            <th><span>Classification</span></th>
+                            <th>
+                                <select id="class">
+                                    <option value="0" selected>Select classification</option>
+                                    <option value="good">Good</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="bad">Bad</option>
+                                    <option value="unpaved">Unpaved</option>
+                                </select>
+                            </th>
+
+                        </tr>
+                        <tr>
+                            <th><span>Image</span></th>
+                            <th>
+                                <input type="file"/>
+                            </th>
+                        </tr>
+                        
+                        <tr>
+                            <th><span>Time</span></th>
+                            <th><input type="text" placeholder="Time" id="time"></th>
+                        </tr>
+                        <tr>
+                            <th><span>Geolocation</span></th>
+                            <th><input type="text" placeholder="Latitude" id="lat"></th>
+                            <th><input type="text" placeholder="Longitude" id="lng"></th>
+                        </tr>
+                        <tr>
+                            <th><span>Modified by</span></th>
+                            <th><input type="text" placeholder="User ID" id="modifiedBy"></th>
+                        </tr>
+                        <tr>
+                            <th colspan="2">
+                                <button id="addEntry">Add entry</button>
+                                <button id="delEntry">Delete entry</button>
+                                <button id="updEntry">Update entry</button>
+                            </th>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <br>
+            <p id="prompt">-</p>
+            <br>
+            <a href="/logout" >Logout</a>
+        </div>
+        
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script>
+            $(document).ready(function(){
+                $("#usrTab").click(function(){
+                    $("#reSec").hide();
+                    $("#usrSec").show();
+                    $("#reTab").css("background-color", "green");
+                    $("#usrTab").css("background-color", "rgb(54, 82, 42)");
+                })
+
+                $("#reTab").click(function(){
+                    $("#reSec").show();
+                    $("#usrSec").hide();
+                    $("#usrTab").css("background-color", "green");
+                    $("#reTab").css("background-color", "rgb(54, 82, 42)");
+                })
+
+                $("#usrTab").click();
+                
+                $("#addUser").click(function(){
+                    var uid = $("#uid").val();
+                    var email = $("#email").val();
+                    var auth = $("#auth").val();
+                    var password = $("#password").val();
+                    var data = {
+                        uid: uid,
+                        email: email,
+                        auth: auth,
+                        password: password,
+                        action:"add user"
+                    };
+                    $.post("/admin", JSON.stringify(data), function(response, status){
+                        if(response.action == "success")
+                            $("#prompt").text("User added successfully");
+                        if(response.action == 'empty')
+                            $("#prompt").html("Please fill all the fields");
+                        if(response.action=='invalid username')
+                            $("#prompt").html("Username should contain only alphanumeric characters and should be atleast 6 characters long");
+                        if(response.action=='invalid password')
+                            $("#prompt").html("Password should contain only alphanumeric characters and should be atleast 8 characters long");
+                        if(response.action=='user exists')
+                            $("#prompt").html("User already exists");
+                        if(response.action=='email exists')
+                            $("#prompt").html("Email already exists");
+
+                    });
+                });
+                
+                $("#addEntry").click(function(){
+                    // var rid = $("#rid").val();
+                    var classification = $("#class").val();
+                    var time = $("#time").val();
+                    var lat = $("#lat").val();
+                    var lng = $("#lng").val();
+                    var modifiedBy = $("#modifiedBy").val();
+                    var data = {
+                        // rid: rid,
+                        classification: classification,
+                        time: time,
+                        lat: lat,
+                        lng: lng,
+                        modifiedBy: modifiedBy,
+                        action:"add entry"
+                    };
+                    $.post("/admin", JSON.stringify(data), function(response, status){
+                        if(response.action == "success")
+                            $("#prompt").text("Entry added successfully");
+                        if(response.action == 'empty')
+                            $("#prompt").html("Please fill all the fields");
+                        if(response.action=='invalid data')
+                            $("#prompt").html("Invalid data");
+                        if(response.action=='entry exists')
+                            $("#prompt").html("Entry already exists");
+                    });
+                });
+
+
+            })
+        </script>
+            
+    </body>
+</html>

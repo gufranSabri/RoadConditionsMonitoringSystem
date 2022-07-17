@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Road API GUI</title>
+        <link rel="icon" type="image/png" href="../static/images/logo.png">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+
+        <style>
+            *{
+                font-family: 'Roboto', sans-serif;
+                font-weight: 300;
+                user-select: none;
+            }
+            body{
+                background-color: rgb(229, 236, 243);
+                margin: 0;
+            }
+            .header{
+                background-color:rgb(21, 51, 8);
+                color: white;
+                height: 50px;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding:10px 10px 10px 20px;
+                box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+            }
+            .container{
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
+                margin: 0;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                -ms-transform: translate(-50%, -50%);
+                transform: translate(-50%, -50%);
+                width: 70%;
+            }
+            label{
+                margin-right: 5px;
+                margin-top: 5px;
+                border-radius: 5px;
+                background-color: rgb(84, 128, 66);
+                color: white;
+                padding: 5px;
+                font-size: 20px;
+                padding: 6px;
+                position: relative;
+                top: 1px;
+            }
+            label:hover{
+                background-color: green;
+            }
+            button{
+                margin-right: 5px;
+                margin-top: 5px;
+                border-radius: 5px;
+                background-color: rgb(84, 128, 66);
+                color: white;
+                padding: 5px;
+                font-size: 20px;
+            }
+            button:hover{
+                background-color: green;
+            }
+            img{
+                object-fit: scale-down;
+                display: block;
+                margin-left: auto;
+                margin-right: auto;
+            }
+            .predres{
+                font-size: 20px;
+            }
+            .right{
+                width: 30%;
+                margin-left: 50px;
+            }
+            .left{
+                width: 40%;
+            }
+            .heading{
+                font-weight: bold;
+            }
+            .leftButtonDiv{
+                width: 50%;
+                align-items: center; 
+                display:flex; 
+                justify-content: space-evenly;
+                margin: auto;
+            }
+            img{
+                width:500px;
+                height:276px;
+            }
+            a{
+                text-decoration: none;
+                color: white;
+            }
+            #heading{
+                text-align: center;
+                font-weight: 400;
+
+            }
+
+            @media (max-width:1800px){
+                img{
+                    width: 336px;
+                    height: 186px;
+                }
+            }
+            @media (max-width:1400px){
+                label,button{
+                    font-size: 15px;
+                }
+            }
+            @media (max-width:1200px){
+                img{
+                    width: 224px;
+                    height: 124px;
+                }
+                .leftButtonDiv{
+                    width: 100%;
+                }
+            }
+            @media (max-width:1110px){
+                .container{
+                    flex-direction: column;
+                }
+                
+                .right{
+                    margin-left: 0px;
+                    margin-top: 20px;
+                    text-align: center;
+                }
+                .heading,.predres{
+                    font-size: 15px;
+                }
+
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1><a href="/">RoadCapture</a></h1>
+        </div>
+        <!-- <h1 id="heading" >RoadCapture EndPoint GUI</h1> -->
+        <div class="container">
+            <div class="left">
+                <img id="selected-image" src="../static/images/file.png" />
+                <br>
+                <div class="leftButtonDiv" >
+                    <input id="image-selector" type="file" hidden/>
+                    <label for="image-selector">Choose file</label>
+                    <button id="predict-button">Predict</button>        
+                </div>
+            </div>
+            <div class="right">
+                <h2 class="heading" id="mainpred">Prediction: </h2>
+                <p class="predres" id="good" >Good: -</p>
+                <p class="predres" id="medium" >Medium: -</p>
+                <p class="predres" id="bad" >Bad: -</p>
+                <p class="predres" id="unpaved" >Unpaved: -</p>
+            </div>
+        </div>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script>
+            let base64Image;
+            $("#image-selector").change(function() {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    let dataURL = reader.result;
+                    $('#selected-image').attr("src", dataURL);
+                    base64Image = dataURL.replace("data:image/jpeg;base64,","").replace("data:image/png;base64,","").replace("data:image/jpg;base64,","");
+                }
+                reader.readAsDataURL($("#image-selector")[0].files[0]);
+                $("#mainpred").text("Prediction: -");
+                $("#good").text("good: -");
+                $("#medium").text("medium: -");
+                $("#bad").text("bad: -");
+                $("#unpaved").text("unpaved: -");
+                $("img").css({"object-fit":"contain", "border":"2px dashed blue", "padding":"3px"})
+            });
+
+            $("#predict-button").click(function(){
+                let message = {image: base64Image}
+                $.post("/predict", JSON.stringify(message), function(response, status){
+                    if(response.prediction == undefined){
+                        alert("bad request")
+                        return
+                    }
+                    $("#mainpred").text("Prediction: "+response.prediction);
+                    $("#good").text("Good: "+response.predictions.good.toFixed(2));
+                    $("#medium").text("Medium: "+response.predictions.medium.toFixed(2));
+                    $("#bad").text("Bad: "+response.predictions.bad.toFixed(2));
+                    $("#unpaved").text("Unpaved: "+response.predictions.unpaved.toFixed(2));
+                });
+            });       
+        </script>
+    </body>
+</html>

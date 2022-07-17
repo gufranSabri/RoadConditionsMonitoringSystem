@@ -1,0 +1,192 @@
+<html>
+    <head>
+        <title>RoadCapure - Dashboard</title>
+        <link rel="icon" type="image/png" href="../static/images/logo.png">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Patua+One&display=swap" rel="stylesheet">
+        <link rel='stylesheet' href='https://unpkg.com/leaflet@1.7.1/dist/leaflet.css' integrity='sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==' crossorigin=''>
+
+        <style>
+            *{
+                font-family: 'Roboto', sans-serif;
+                font-weight: 300;
+                user-select: none;
+            }
+            body{
+                margin: 0;
+            }
+            #map{
+                height: 92%;
+            }
+            .header{
+                background-color:rgb(21, 51, 8);
+                color: white;
+                height: 50px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding:10px 10px 10px 20px;
+                box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+            }
+            .sidePanel{
+                position: fixed;
+                top: 80px;
+                right: 0;
+                width: 300px;
+                height: 100%;
+                background-color: rgb(229, 236, 243);
+                z-index: 1000;
+                overflow-y: auto;
+                overflow-x: hidden;
+                box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.2);
+                padding: 10px;
+                border-radius: 15px 0px 0px 0px;
+            }
+            select{
+                width: 150px;
+            }
+            a{
+                text-decoration: none;
+            }
+            a:hover{
+                text-decoration: underline;
+            }
+            #optButton{
+                font-size: 35px;
+                font-family: 'Patua One', cursive;
+                margin-right: 20px;
+                width: 50px;
+                text-align: end;
+            }
+            #optButton:hover{
+                cursor: pointer;
+                font-size: 45px;
+            }
+            button{
+                margin-right: 5px;
+                margin-top: 5px;
+                border-radius: 5px;
+                background-color: rgb(84, 128, 66);
+                color: white;
+                padding: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
+            <h1>RoadCapture Dashboard</h1>
+            <p id="optButton" >&gt;</p>
+        </div>
+        <div id="map"></div>
+        <div class="sidePanel">
+            <h1>Options</h1>
+
+            <select>
+                <option value="all">Filter by Road Quality</option>
+                <option value="all">All</option>
+                <option value="good">Good</option>
+                <option value="medium">Medium</option>
+                <option value="bad">Bad</option>
+                <option value="unpaved">Unpaved</option>
+            </select>
+
+            <br><br>
+            <select>
+                <option value="all">Filter by Road Name</option>
+            </select>
+
+            <br><br>
+            <select>
+                <option value="all">Filter by City</option>
+            </select>
+
+            <br><br>
+            <input type="number" placeholder="Longitude" />
+            <br>
+            <input type="number" placeholder="Latitude" />
+
+            <br><br>
+            <button>Apply</button>
+
+            <br><br><br><br>
+            <hr>
+            <a href="/admin" target="_blank">Assignment Dashboard</a>
+            <br>
+            <a href="/predict" target="_blank">EndPoint GUI</a>
+            <br>
+            <a href="/login" target="_blank">Login</a>
+            <p id="data" >{{points}}</p>
+        </div>
+        
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script src='https://unpkg.com/leaflet@1.7.1/dist/leaflet.js' integrity='sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==' crossorigin=''></script>
+        <script>
+            $(document).ready(function(){
+                var map = L.map('map').setView([26.145348, 50.093163], 13);
+                var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+                map.addLayer(layer);
+
+                $("#optButton").click(function(){
+                    $(".sidePanel").animate({width: "toggle"},100);
+                    $(this).html($(this).html() == "&lt;" ? "&gt;" : "&lt;");
+                });
+
+                // map.on("contextmenu", function (event) {
+                //     var classification = "bad";
+                //     var time = "now";
+                //     var lat = event.latlng.lat;
+                //     var lng = event.latlng.lng;
+                //     var modifiedBy = "admin";
+                //     var data = {
+                //         // rid: rid,
+                //         classification: classification,
+                //         time: time,
+                //         lat: lat,
+                //         lng: lng,
+                //         modifiedBy: modifiedBy,
+                //         action:"add entry"
+                //     };
+                //     $.post("/admin", JSON.stringify(data), function(response, status){
+                //         console.log(response.action)
+                //         // if(response.action == "success")
+                //         //     $("#prompt").text("Entry added successfully");
+                //         // if(response.action == 'empty')
+                //         //     $("#prompt").html("Please fill all the fields");
+                //         // if(response.action=='invalid data')
+                //         //     $("#prompt").html("Invalid data");
+                //         // if(response.action=='entry exists')
+                //         //     $("#prompt").html("Entry already exists");
+                //     });
+                // });
+                
+                var data = new String($("#data").html())
+                $("#data").html("")
+                
+                data = data.replaceAll("'", '"')
+                var objData = JSON.parse(data)
+                console.log(data)
+                
+                for (let i = 1; ; i++) {
+                    console.log(i)
+                    try{
+                        if(objData["point"+i].classification=="good")drawPoint(map, objData["point"+i].latitude, objData["point"+i].longitude, 'green')
+                        if(objData["point"+i].classification=="medium")drawPoint(map, objData["point"+i].latitude, objData["point"+i].longitude, 'orange')
+                        if(objData["point"+i].classification=="bad")drawPoint(map, objData["point"+i].latitude, objData["point"+i].longitude, 'red')
+                        if(objData["point"+i].classification=="unpaved")drawPoint(map, objData["point"+i].latitude, objData["point"+i].longitude, 'purple')
+                    }
+                    catch(err) {break}
+                }
+            })
+            function drawPoint(map, lat, lon, color){
+                var circle = L.circle([lat, lon], {
+                    color: color,
+                    fillColor: color,
+                    fillOpacity: 0.2,
+                    radius: 8
+                }).addTo(map);
+            }
+        </script>
+    </body>
+</html>
