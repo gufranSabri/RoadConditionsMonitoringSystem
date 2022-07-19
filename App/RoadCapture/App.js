@@ -48,7 +48,8 @@ const App = () => {
             image:res.replace("data:image/jpg;base64,",""),
             longitude: location.longitude,
             latitude: location.latitude,
-            testing:testing
+            testing:testing,
+            action:"app"
           })
         }).then(response => response.json()).then(data=>console.log(data))
       )

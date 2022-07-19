@@ -218,7 +218,8 @@ def predict():
         }
         print(prediction)
 
-
+        if message["action"]=="web":return jsonify(response)
+    
         data = {
                 "classification":label,
                 "image":"",
@@ -229,8 +230,6 @@ def predict():
             }
         print(data)
         if not message['testing']:
-            
-            
             dbh.insert_data(dbh.ROAD_POINT_COLLECTION,data)
 
         return jsonify(response)

@@ -83,7 +83,7 @@
         <div class="sidePanel">
             <h1>Options</h1>
 
-            <select>
+            <select id="roadQuality">
                 <option value="all">Filter by Road Quality</option>
                 <option value="all">All</option>
                 <option value="good">Good</option>
@@ -92,7 +92,7 @@
                 <option value="unpaved">Unpaved</option>
             </select>
 
-            <br><br>
+            <!-- <br><br>
             <select>
                 <option value="all">Filter by Road Name</option>
             </select>
@@ -100,15 +100,16 @@
             <br><br>
             <select>
                 <option value="all">Filter by City</option>
-            </select>
+            </select> -->
 
             <br><br>
-            <input type="number" placeholder="Longitude" />
+            
+            <input id="lat" type="number" placeholder="Latitude" />
             <br>
-            <input type="number" placeholder="Latitude" />
+            <input id="lng" type="number" placeholder="Longitude" />
 
             <br><br>
-            <button>Apply</button>
+            <button id="apply">Apply</button>
 
             <br><br><br><br>
             <hr>
@@ -123,62 +124,64 @@
         <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
         <script src='https://unpkg.com/leaflet@1.7.1/dist/leaflet.js' integrity='sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==' crossorigin=''></script>
         <script>
+            var showWhichRoadQuality = "all", data=""
             $(document).ready(function(){
-                var map = L.map('map').setView([26.145348, 50.093163], 13);
-                var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
-                map.addLayer(layer);
+                // var map = L.map('map').setView([26.145348, 50.093163], 13);
+                // var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+                // map.addLayer(layer);
+
+                var map = init(26.145348, 50.093163)
 
                 $("#optButton").click(function(){
                     $(".sidePanel").animate({width: "toggle"},100);
                     $(this).html($(this).html() == "&lt;" ? "&gt;" : "&lt;");
                 });
+                $("#apply").click(function(){
+                    var lat = $("#lat").val(), lng = $("#lng").val()
+                    
+                    showWhichRoadQuality = $("#roadQuality").val()
 
-                // map.on("contextmenu", function (event) {
-                //     var classification = "bad";
-                //     var time = "now";
-                //     var lat = event.latlng.lat;
-                //     var lng = event.latlng.lng;
-                //     var modifiedBy = "admin";
-                //     var data = {
-                //         // rid: rid,
-                //         classification: classification,
-                //         time: time,
-                //         lat: lat,
-                //         lng: lng,
-                //         modifiedBy: modifiedBy,
-                //         action:"add entry"
-                //     };
-                //     $.post("/admin", JSON.stringify(data), function(response, status){
-                //         console.log(response.action)
-                //         // if(response.action == "success")
-                //         //     $("#prompt").text("Entry added successfully");
-                //         // if(response.action == 'empty')
-                //         //     $("#prompt").html("Please fill all the fields");
-                //         // if(response.action=='invalid data')
-                //         //     $("#prompt").html("Invalid data");
-                //         // if(response.action=='entry exists')
-                //         //     $("#prompt").html("Entry already exists");
-                //     });
-                // });
-                
-                var data = new String($("#data").html())
+                    map.remove()
+                    if(parseFloat(lat)&&parseFloat(lng))map = init(lat,lng)
+                    else map = init(26.145348, 50.093163)
+                    drawPoints(map)
+                })
+
+                var dataT = new String($("#data").html())
                 $("#data").html("")
                 
-                data = data.replaceAll("'", '"')
-                var objData = JSON.parse(data)
-                console.log(data)
+                dataT = dataT.replaceAll("'", '"')
+                data = JSON.parse(dataT)
                 
-                for (let i = 1; ; i++) {
-                    console.log(i)
-                    try{
-                        if(objData["point"+i].classification=="good")drawPoint(map, objData["point"+i].latitude, objData["point"+i].longitude, 'green')
-                        if(objData["point"+i].classification=="medium")drawPoint(map, objData["point"+i].latitude, objData["point"+i].longitude, 'orange')
-                        if(objData["point"+i].classification=="bad")drawPoint(map, objData["point"+i].latitude, objData["point"+i].longitude, 'red')
-                        if(objData["point"+i].classification=="unpaved")drawPoint(map, objData["point"+i].latitude, objData["point"+i].longitude, 'purple')
-                    }
-                    catch(err) {break}
-                }
+                drawPoints(map)
+
             })
+            function init(lat,lng){
+                try{
+                    var map = L.map('map').setView([lat,lng], 13);
+                    var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+                    map.addLayer(layer);
+                    return map
+                }
+                catch(err){
+                    var map = L.map('map').setView([26.145348, 50.093163], 13);
+                    var layer = new L.TileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png');
+                    map.addLayer(layer);
+                    return map
+                }
+            }
+
+            function drawPoints(map){
+                for (let i = 1; ; i++) {
+                    try{
+                        if((showWhichRoadQuality=="all"||showWhichRoadQuality=="good")&&data["point"+i].classification=="good")drawPoint(map, data["point"+i].latitude, data["point"+i].longitude, 'green')
+                        if((showWhichRoadQuality=="all"||showWhichRoadQuality=="medium")&&data["point"+i].classification=="medium")drawPoint(map, data["point"+i].latitude, data["point"+i].longitude, 'orange')
+                        if((showWhichRoadQuality=="all"||showWhichRoadQuality=="bad")&&data["point"+i].classification=="bad")drawPoint(map, data["point"+i].latitude, data["point"+i].longitude, 'red')
+                        if((showWhichRoadQuality=="all"||showWhichRoadQuality=="unpaved")&&data["point"+i].classification=="unpaved")drawPoint(map, data["point"+i].latitude, data["point"+i].longitude, 'purple')
+                    }
+                    catch(err) {console.log;break}
+                }
+            }
             function drawPoint(map, lat, lon, color){
                 var circle = L.circle([lat, lon], {
                     color: color,
@@ -190,3 +193,45 @@
         </script>
     </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- // map.on("contextmenu", function (event) {
+    //     var classification = "bad";
+    //     var time = "now";
+    //     var lat = event.latlng.lat;
+    //     var lng = event.latlng.lng;
+    //     var modifiedBy = "admin";
+    //     var data = {
+    //         // rid: rid,
+    //         classification: classification,
+    //         time: time,
+    //         lat: lat,
+    //         lng: lng,
+    //         modifiedBy: modifiedBy,
+    //         action:"add entry"
+    //     };
+    //     $.post("/admin", JSON.stringify(data), function(response, status){
+    //         console.log(response.action)
+    //         // if(response.action == "success")
+    //         //     $("#prompt").text("Entry added successfully");
+    //         // if(response.action == 'empty')
+    //         //     $("#prompt").html("Please fill all the fields");
+    //         // if(response.action=='invalid data')
+    //         //     $("#prompt").html("Invalid data");
+    //         // if(response.action=='entry exists')
+    //         //     $("#prompt").html("Entry already exists");
+    //     });
+    // }); -->

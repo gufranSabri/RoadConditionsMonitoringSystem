@@ -188,8 +188,9 @@
             });
 
             $("#predict-button").click(function(){
-                let message = {image: base64Image}
+                let message = {image: base64Image,action:"web"}
                 $.post("/predict", JSON.stringify(message), function(response, status){
+                    console.log(response)
                     if(response.prediction == undefined){
                         alert("bad request")
                         return
