@@ -3,7 +3,7 @@ import pymongo
 USER_COLLECTION = "AuthorizedUser"
 ROAD_POINT_COLLECTION = "RoadPoints"
 
-client = pymongo.MongoClient("mongodb+srv://gufran:wamedoo5@cluster0.w7ri1.mongodb.net/RoadCapture?retryWrites=true&w=majority")
+client = pymongo.MongoClient("mongodb+srv://gufran:pleasedontsteal@cluster0.w7ri1.mongodb.net/RoadCapture?retryWrites=true&w=majority")
 db = client.RoadCapture
 
 def create_collection(collection_name):

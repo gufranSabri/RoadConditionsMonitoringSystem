@@ -38,7 +38,8 @@ const App = () => {
       const data = await takePicture({quality: 0.5, maxWidth: 224, maxHeight: 124});
       await RNFS.readFile(data.uri, "base64")
       .then(async (res) => 
-        await fetch('http://192.168.8.108:5000/predict',{
+      await fetch('http://172.16.113.254:5000/predict',{
+        // await fetch('http://192.168.8.108:5000/predict',{
           method:'post',
           headers:{
             'Accept': 'application/json',
